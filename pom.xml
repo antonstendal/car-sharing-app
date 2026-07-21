@@ -47,6 +47,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -132,6 +136,9 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
@@ -140,6 +147,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
