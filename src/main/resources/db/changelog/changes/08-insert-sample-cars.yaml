@@ -1,0 +1,70 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-sample-cars
+      author: your_name
+      changes:
+        - insert:
+            tableName: cars
+            columns:
+              - column:
+                  name: brand
+                  value: "Toyota"
+              - column:
+                  name: model
+                  value: "Camry"
+              - column:
+                  name: type
+                  value: "SEDAN"
+              - column:
+                  name: inventory
+                  valueNumeric: 5
+              - column:
+                  name: daily_fee
+                  valueNumeric: 49.99
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
+
+        - insert:
+            tableName: cars
+            columns:
+              - column:
+                  name: brand
+                  value: "BMW"
+              - column:
+                  name: model
+                  value: "X5"
+              - column:
+                  name: type
+                  value: "SUV"
+              - column:
+                  name: inventory
+                  valueNumeric: 3
+              - column:
+                  name: daily_fee
+                  valueNumeric: 89.99
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
+
+        - insert:
+            tableName: cars
+            columns:
+              - column:
+                  name: brand
+                  value: "Volkswagen"
+              - column:
+                  name: model
+                  value: "Golf"
+              - column:
+                  name: type
+                  value: "HATCHBACK"
+              - column:
+                  name: inventory
+                  valueNumeric: 8
+              - column:
+                  name: daily_fee
+                  valueNumeric: 35.00
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
