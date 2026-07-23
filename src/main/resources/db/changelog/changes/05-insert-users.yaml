@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-users
+      author: anton
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: first_name
+                  value: Bob
+              - column:
+                  name: last_name
+                  value: Thornton
+              - column:
+                  name: email
+                  value: manager@gmail.com
+              - column:
+                  name: password
+                  value: $2a$10$dp3aLs9Dng6gLvRoc5mhX.e8L0IHWhiHAfamKivjzajGcd7uTgYVa
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: first_name
+                  value: Alice
+              - column:
+                  name: last_name
+                  value: Harrison
+              - column:
+                  name: email
+                  value: customer@gmail.com
+              - column:
+                  name: password
+                  value: $2a$10$xgqf9lvTiowllUykWW/IYuIaIjslPu6LdBDa10ZwclpTB/vma6G0.
