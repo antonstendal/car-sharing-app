@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: assign-roles-to-users
+      author: anton
+      changes:
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: role_id
+                  valueNumeric: 2
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+              - column:
+                  name: role_id
+                  valueNumeric: 1
