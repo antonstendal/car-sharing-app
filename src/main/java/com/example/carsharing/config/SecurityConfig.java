@@ -35,9 +35,11 @@ public class SecurityConfig {
                 .sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**",
+                        .requestMatchers(
+                                "/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**")
+                                "/v3/api-docs/**",
+                                "/test-notifications")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/cars", "/cars/*")
                         .permitAll()
