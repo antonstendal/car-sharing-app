@@ -15,4 +15,6 @@ public interface RentalService {
     RentalDto createRental(CreateRentalRequestDto requestDto) throws CarOutOfStockException;
 
     RentalDto returnRental(Long id) throws RentalAlreadyReturnedException;
+
+    void notifyOverdueRentals();
 }

@@ -10,11 +10,14 @@ import com.example.carsharing.model.Car;
 import com.example.carsharing.model.Rental;
 import com.example.carsharing.model.Role;
 import com.example.carsharing.model.User;
+import com.example.carsharing.notification.RentalNotificationMessage;
 import com.example.carsharing.repository.car.CarRepository;
 import com.example.carsharing.repository.rental.RentalRepository;
+import com.example.carsharing.service.NotificationService;
 import com.example.carsharing.service.RentalService;
 import com.example.carsharing.service.UserService;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +34,8 @@ public class RentalServiceImpl implements RentalService {
     private final RentalMapper rentalMapper;
     private final UserService userService;
     private final CarRepository carRepository;
+    private final NotificationService notificationService;
+    private final RentalNotificationMessage notificationMessageBuilder;
 
     @Override
     public Page<RentalDto> getRentals(Long userId, Boolean isActive, Pageable pageable) {
@@ -54,7 +60,8 @@ public class RentalServiceImpl implements RentalService {
 
     @Transactional
     @Override
-    public RentalDto createRental(CreateRentalRequestDto requestDto) throws CarOutOfStockException {
+    public RentalDto createRental(CreateRentalRequestDto requestDto)
+            throws CarOutOfStockException {
         Car car = carRepository.findById(requestDto.carId()).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id " + requestDto.carId()));
         if (car.getInventory() == 0) {
@@ -67,7 +74,14 @@ public class RentalServiceImpl implements RentalService {
         rental.setCar(car);
         rental.setUser(userService.getUser());
         rental.setRentalDate(LocalDate.now());
-        return rentalMapper.toDto(rentalRepository.save(rental));
+        RentalDto newRentalDto = rentalMapper.toDto(rentalRepository.save(rental));
+        try {
+            notificationService.send(
+                    notificationMessageBuilder.buildNewRentalMessage(newRentalDto));
+        } catch (RestClientException e) {
+            System.err.println(e.getMessage());
+        }
+        return newRentalDto;
     }
 
     @Transactional
@@ -88,7 +102,38 @@ public class RentalServiceImpl implements RentalService {
         rental.setActualReturnDate(LocalDate.now());
         Car car = rental.getCar();
         car.setInventory(car.getInventory() + 1);
-        return rentalMapper.toDto(rentalRepository.save(rental));
+        RentalDto newRentalDto = rentalMapper.toDto(rentalRepository.save(rental));
+        try {
+            notificationService.send(
+                    notificationMessageBuilder.buildReturnRentalMessage(newRentalDto));
+        } catch (RestClientException e) {
+            System.err.println(e.getMessage());
+        }
+        return newRentalDto;
+    }
+
+    @Override
+    public void notifyOverdueRentals() {
+        List<Rental> overdueRentals =
+                rentalRepository
+                        .findByReturnDateLessThanEqualAndActualReturnDateIsNull(LocalDate.now());
+        List<RentalDto> listRentalDto = overdueRentals.stream().map(rentalMapper::toDto).toList();
+        if (overdueRentals.isEmpty()) {
+            try {
+                notificationService.send(
+                        notificationMessageBuilder.buildNoRentalsOverdueMessage());
+            } catch (RestClientException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        for (RentalDto rentalDto : listRentalDto) {
+            try {
+                notificationService.send(
+                        notificationMessageBuilder.buildOverdueRentalMessage(rentalDto));
+            } catch (RestClientException e) {
+                System.err.println(e.getMessage());
+            }
+        }
     }
 
     private boolean checkRoleIsManager(User loggedUser) {

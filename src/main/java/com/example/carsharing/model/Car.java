@@ -19,7 +19,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @SQLDelete(sql = "Update cars SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted=false")
+@SQLRestriction("is_deleted=0")
 @Entity
 @Table(name = "cars")
 public class Car {
@@ -37,8 +37,8 @@ public class Car {
     private int inventory;
     @Column(nullable = false)
     private BigDecimal dailyFee;
-    @Column(columnDefinition = "BOOLEAN", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
+    @Column(nullable = false)
     private boolean isDeleted = false;
 
     public enum Type {
