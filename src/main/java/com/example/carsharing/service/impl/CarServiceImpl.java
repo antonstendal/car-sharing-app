@@ -2,10 +2,13 @@ package com.example.carsharing.service.impl;
 
 import com.example.carsharing.dto.car.CarDto;
 import com.example.carsharing.dto.car.CreateCarRequestDto;
+import com.example.carsharing.dto.car.UpdateCarRequestDto;
+import com.example.carsharing.exception.EntityAlreadyExistsException;
 import com.example.carsharing.exception.EntityNotFoundException;
 import com.example.carsharing.mapper.CarMapper;
 import com.example.carsharing.model.Car;
 import com.example.carsharing.repository.car.CarRepository;
+import com.example.carsharing.repository.rental.RentalRepository;
 import com.example.carsharing.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,9 +22,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final CarMapper carMapper;
+    private final RentalRepository rentalRepository;
 
     @Override
     public CarDto save(CreateCarRequestDto requestDto) {
+        String model = requestDto.model();
+        String brand = requestDto.brand();
+        Car.Type type = requestDto.type();
+        if (carRepository.findByModelAndBrandAndType(model, brand, type).isPresent()) {
+            throw new EntityAlreadyExistsException(
+                    "The car with model " + model
+                            + " , brand " + brand
+                            + " , type " + type
+                            + " already exist");
+        }
         Car newCar = carMapper.toModel(requestDto);
         return carMapper.toDto(carRepository.save(newCar));
     }
@@ -43,7 +57,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public CarDto update(Long id, CreateCarRequestDto requestDto) {
+    public CarDto update(Long id, UpdateCarRequestDto requestDto) {
         Car car = carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id " + id));
         carMapper.update(requestDto, car);
@@ -55,6 +69,10 @@ public class CarServiceImpl implements CarService {
     public void deleteById(Long id) {
         Car car = carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id " + id));
+        if (rentalRepository.existsByCarIdAndActualReturnDateIsNull(id)) {
+            throw new EntityAlreadyExistsException("Cannot delete car with id" + id
+                    + " because it has active rentals");
+        }
         carRepository.delete(car);
     }
 }

@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-rentals-table
-      author: car-sharing
+      author: anton
       changes:
         - createTable:
             tableName: rentals
@@ -53,12 +53,14 @@ databaseChangeLog:
             referencedColumnNames: id
             constraintName: fk_rentals_users
 
-        - addConstraint:
-            constraintName: chk_return_date_gte_rental_date
-            tableName: rentals
-            checkCondition: "return_date >= rental_date"
+        - sql:
+            sql: |
+              ALTER TABLE rentals
+              ADD CONSTRAINT chk_return_date_gte_rental_date
+              CHECK (return_date >= rental_date);
 
-        - addConstraint:
-            constraintName: chk_actual_return_date_gte_rental_date
-            tableName: rentals
-            checkCondition: "actual_return_date IS NULL OR actual_return_date >= rental_date"
+        - sql:
+            sql: |
+              ALTER TABLE rentals
+              ADD CONSTRAINT chk_actual_return_date_gte_rental_date
+              CHECK (actual_return_date IS NULL OR actual_return_date >= rental_date);

@@ -20,6 +20,7 @@ public record UserRegistrationRequestDto(
         String repeatPassword,
         @NotBlank
         String firstName,
+        @NotBlank
         String lastName
 ) {
 }
