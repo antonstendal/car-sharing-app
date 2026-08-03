@@ -21,6 +21,8 @@ public interface UserMapper {
     @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRolesToString")
     UserResponseDto toDto(User user);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     User toModel(UserRegistrationRequestDto requestDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -32,7 +34,7 @@ public interface UserMapper {
             return Collections.emptySet();
         }
         return roles.stream()
-                .map(role -> role.getRole().name())
+                .map(role -> role.getRole().name().toLowerCase())
                 .collect(Collectors.toSet());
     }
 }

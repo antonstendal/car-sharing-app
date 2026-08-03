@@ -15,6 +15,7 @@ import com.example.carsharing.service.UserService;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto update(UserUpdateRequestDto requestDto) {
         User loggedUser = getUser();
-        User user = userRepository.findById(getUser().getId()).orElseThrow(
+        User user = userRepository.findById(loggedUser.getId()).orElseThrow(
                 () -> new EntityNotFoundException("Can't find loggedUser by id "
                         + loggedUser.getId()));
         userMapper.update(requestDto, user);
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
             throw new DataProcessingException("Role can't be null");
         }
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("Can't find loggedUser by id "
+                () -> new EntityNotFoundException("Can't find user by id "
                         + userId));
         Role roleFromDb = roleRepository.findByRole(roleName).orElseThrow(
                 () -> new EntityNotFoundException("Can't find role by value " + roleName));
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new EntityNotFoundException("No authenticated user found");
+            throw new AccessDeniedException("No authenticated user found");
         }
         return (User) authentication.getPrincipal();
     }

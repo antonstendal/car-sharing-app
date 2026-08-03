@@ -24,14 +24,14 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Get logged user", description = "Return info about logged user")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
     @GetMapping("/me")
     public UserResponseDto getLoggedUserInfo() {
         return userService.getLoggedUser();
     }
 
     @Operation(summary = "Update logged user info", description = "Update logged user data")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
     @PutMapping("/me")
     public UserResponseDto updateUserInfo(@RequestBody @Valid UserUpdateRequestDto requestDto) {
         return userService.update(requestDto);

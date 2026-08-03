@@ -1,6 +1,7 @@
 package com.example.carsharing.notification;
 
 import com.example.carsharing.dto.rental.RentalDto;
+import com.example.carsharing.model.Payment;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class RentalNotificationMessageBuilder implements RentalNotificationMessa
                 🚘 Car: %s %s %s
                 📅 Rental Date: %s
                 📆 Expected Return Date: %s
-                💰 Daily Fee: $%s
+                💰 Daily Fee: PLN %s
                 """
                 .formatted(rental.id(),
                         rental.car().brand(),
@@ -65,5 +66,39 @@ public class RentalNotificationMessageBuilder implements RentalNotificationMessa
     @Override
     public String buildNoRentalsOverdueMessage() {
         return "No rentals overdue today!";
+    }
+
+    @Override
+    public String buildSuccessfulPaymentMessage(Payment payment) {
+        return """
+                Payment Successful!
+                
+                🆔 Payment ID: %d
+                💳 Session ID: %s
+                🚗 Rental ID: %d
+                💰 Amount Paid: PLN %s
+                Status: PAID
+                """.formatted(
+                payment.getId(),
+                payment.getSessionId(),
+                payment.getRental().getId(),
+                payment.getAmountToPay()
+        );
+    }
+
+    @Override
+    public String buildCanceledPaymentMessage(Payment payment) {
+        return """
+                Payment Canceled or Expired
+                
+                🆔 Payment ID: %d
+                🚗 Rental ID: %d
+                💰 Amount: PLN %s
+                Status: CANCELED
+                """.formatted(
+                payment.getId(),
+                payment.getRental().getId(),
+                payment.getAmountToPay()
+        );
     }
 }

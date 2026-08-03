@@ -26,4 +26,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     );
 
     List<Rental> findByReturnDateLessThanEqualAndActualReturnDateIsNull(LocalDate date);
+
+    boolean existsByCarIdAndActualReturnDateIsNull(Long carId);
+
 }

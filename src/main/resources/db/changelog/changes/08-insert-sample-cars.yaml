@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: insert-sample-cars
-      author: your_name
+      author: anton
       changes:
         - insert:
             tableName: cars

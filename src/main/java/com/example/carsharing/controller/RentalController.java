@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,8 +43,9 @@ public class RentalController {
     @Operation(summary = "Get all rentals",
             description = "Retrieve a paginated list of rentals"
                     + " filtered by user ID and active status")
+    @PreAuthorize("hasAnyRole('CUSTOMER','MANAGER')")
     @GetMapping
-    public Page<RentalDto> getAll(@RequestParam(name = "user_Id", required = false) Long userId,
+    public Page<RentalDto> getAll(@RequestParam(name = "user_id", required = false) Long userId,
                                   @RequestParam(name = "is_active", required = false)
                                   Boolean isActive,
                                   @PageableDefault(sort = "id") Pageable pageable) {
@@ -51,6 +53,7 @@ public class RentalController {
     }
 
     @Operation(summary = "Get rental by id", description = "Get specific rental details by its ID")
+    @PreAuthorize("hasAnyRole('CUSTOMER','MANAGER')")
     @GetMapping("/{id}")
     public RentalDto getById(@PathVariable Long id) {
         return rentalService.getRentalById(id);

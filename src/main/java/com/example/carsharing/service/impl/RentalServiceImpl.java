@@ -70,8 +70,9 @@ public class RentalServiceImpl implements RentalService {
         }
         car.setInventory(car.getInventory() - 1);
         carRepository.save(car);
-        Rental rental = rentalMapper.toModel(requestDto);
+        Rental rental = new Rental();
         rental.setCar(car);
+        rental.setReturnDate(requestDto.returnDate());
         rental.setUser(userService.getUser());
         rental.setRentalDate(LocalDate.now());
         RentalDto newRentalDto = rentalMapper.toDto(rentalRepository.save(rental));

@@ -2,6 +2,7 @@ package com.example.carsharing.controller;
 
 import com.example.carsharing.dto.car.CarDto;
 import com.example.carsharing.dto.car.CreateCarRequestDto;
+import com.example.carsharing.dto.car.UpdateCarRequestDto;
 import com.example.carsharing.service.CarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,7 +54,7 @@ public class CarController {
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{id}")
     public CarDto update(@PathVariable Long id,
-                         @RequestBody @Valid CreateCarRequestDto requestDto) {
+                         @RequestBody @Valid UpdateCarRequestDto requestDto) {
         return carService.update(id, requestDto);
     }
 
