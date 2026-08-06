@@ -29,8 +29,11 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         String token = getToken(request);
-
-        if (token != null && jwtUtil.isValidToken(token)) {
+        if (token != null && !jwtUtil.isValidToken(token)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Expired or invalid token");
+            return;
+        }
+        if (token != null) {
             String username = jwtUtil.getUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
