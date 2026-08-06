@@ -1,6 +1,7 @@
 package com.example.carsharing.exception;
 
-public class CarOutOfStockException extends Throwable {
+public class CarOutOfStockException extends RuntimeException {
     public CarOutOfStockException(String message) {
+        super(message);
     }
 }
