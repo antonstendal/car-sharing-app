@@ -80,4 +80,8 @@ public class PaymentUtil {
                     .multiply(FINE_MULTIPLIER);
         }
     }
+
+    public Session retrieveStripeSession(String sessionId) throws StripeException {
+        return Session.retrieve(sessionId);
+    }
 }
