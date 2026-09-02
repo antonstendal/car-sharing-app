@@ -101,7 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
                         "Can't find payment with session id " + sessionId));
         Session retrieve;
         try {
-            retrieve = Session.retrieve(sessionId);
+            retrieve = paymentUtil.retrieveStripeSession(sessionId);
         } catch (StripeException e) {
             throw new PaymentProcessingException(
                     "Can't retrieve Stripe session for session id: " + sessionId, e);

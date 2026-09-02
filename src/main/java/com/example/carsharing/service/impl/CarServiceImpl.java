@@ -34,7 +34,7 @@ public class CarServiceImpl implements CarService {
                     "The car with model " + model
                             + " , brand " + brand
                             + " , type " + type
-                            + " already exist");
+                            + " already exists");
         }
         Car newCar = carMapper.toModel(requestDto);
         return carMapper.toDto(carRepository.save(newCar));
@@ -70,7 +70,7 @@ public class CarServiceImpl implements CarService {
         Car car = carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id " + id));
         if (rentalRepository.existsByCarIdAndActualReturnDateIsNull(id)) {
-            throw new EntityAlreadyExistsException("Cannot delete car with id" + id
+            throw new EntityAlreadyExistsException("Cannot delete car with id " + id
                     + " because it has active rentals");
         }
         carRepository.delete(car);
