@@ -5,6 +5,7 @@ import com.stripe.exception.StripeException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -73,7 +74,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RegistrationException.class)
-    public ResponseEntity<ErrorResponse> handeRegistration(RegistrationException e) {
+    public ResponseEntity<ErrorResponse> handleRegistration(RegistrationException e) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -81,6 +82,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRentalAlreadyReturn(
             RentalAlreadyReturnedException e) {
         return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(RentalProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleRentalProcessingException(
+            RentalProcessingException e) {
+        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ErrorResponse> handlePropertyReference(
+            PropertyReferenceException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,
+                "Invalid sort or filter property: " + e.getPropertyName());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(

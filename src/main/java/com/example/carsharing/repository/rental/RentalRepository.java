@@ -12,13 +12,22 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
-    @Query("""
+    @Query(value = """
             SELECT r FROM Rental r
-            WHERE (:userId is NULL OR r.user.id = :userId)
+            JOIN FETCH r.car
+            JOIN FETCH r.user
+            WHERE (:userId IS NULL OR r.user.id = :userId)
               AND (:isActive IS NULL OR
                   (:isActive = true AND r.actualReturnDate IS NULL) OR
                   (:isActive = false AND r.actualReturnDate IS NOT NULL))
-            """)
+            """,
+            countQuery = """
+                    SELECT COUNT(r) FROM Rental r
+                    WHERE (:userId IS NULL OR r.user.id = :userId)
+                      AND (:isActive IS NULL OR
+                          (:isActive = true AND r.actualReturnDate IS NULL) OR
+                          (:isActive = false AND r.actualReturnDate IS NOT NULL))
+                    """)
     Page<Rental> searchRentals(
             @Param("userId") Long userId,
             @Param("isActive") Boolean isActive,

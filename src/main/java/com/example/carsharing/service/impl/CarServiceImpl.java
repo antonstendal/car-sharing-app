@@ -5,6 +5,7 @@ import com.example.carsharing.dto.car.CreateCarRequestDto;
 import com.example.carsharing.dto.car.UpdateCarRequestDto;
 import com.example.carsharing.exception.EntityAlreadyExistsException;
 import com.example.carsharing.exception.EntityNotFoundException;
+import com.example.carsharing.exception.RentalProcessingException;
 import com.example.carsharing.mapper.CarMapper;
 import com.example.carsharing.model.Car;
 import com.example.carsharing.repository.car.CarRepository;
@@ -70,7 +71,7 @@ public class CarServiceImpl implements CarService {
         Car car = carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id " + id));
         if (rentalRepository.existsByCarIdAndActualReturnDateIsNull(id)) {
-            throw new EntityAlreadyExistsException("Cannot delete car with id " + id
+            throw new RentalProcessingException("Cannot delete car with id " + id
                     + " because it has active rentals");
         }
         carRepository.delete(car);

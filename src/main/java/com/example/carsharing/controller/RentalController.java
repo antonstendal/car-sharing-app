@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +35,7 @@ public class RentalController {
     @Operation(summary = "Create a new rental",
             description = "Add a new car rental for the current user "
                     + "and decrease car inventory by 1")
+    @PreAuthorize("hasAnyRole('CUSTOMER','MANAGER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RentalDto create(@RequestBody @Valid CreateRentalRequestDto requestDto)
@@ -48,7 +51,9 @@ public class RentalController {
     public Page<RentalDto> getAll(@RequestParam(name = "user_id", required = false) Long userId,
                                   @RequestParam(name = "is_active", required = false)
                                   Boolean isActive,
-                                  @PageableDefault(sort = "id") Pageable pageable) {
+                                  @ParameterObject
+                                  @PageableDefault(sort = "id",
+                                          direction = Sort.Direction.ASC) Pageable pageable) {
         return rentalService.getRentals(userId, isActive, pageable);
     }
 
@@ -61,6 +66,7 @@ public class RentalController {
 
     @Operation(summary = "Create return rental",
             description = "Set the actual return date for a rental")
+    @PreAuthorize("hasAnyRole('CUSTOMER','MANAGER')")
     @PostMapping("/{id}/return")
     public RentalDto rentalReturn(@PathVariable Long id) throws RentalAlreadyReturnedException {
         return rentalService.returnRental(id);

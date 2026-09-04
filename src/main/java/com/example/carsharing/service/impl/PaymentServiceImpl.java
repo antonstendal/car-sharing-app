@@ -140,18 +140,22 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<PaymentDto> getPayments(Long userId) {
         User loggedUser = userService.getUser();
-        boolean isCustomer = checkRole(userService, Role.RoleName.CUSTOMER);
-        if (isCustomer && userId != null && !Objects.equals(userId, loggedUser.getId())) {
-            throw new PaymentProcessingException("Customers cannot view other users' payments");
+        boolean isManager = checkRole(userService, Role.RoleName.MANAGER);
+
+        if (!isManager) {
+            if (userId != null && !Objects.equals(userId, loggedUser.getId())) {
+                throw new PaymentProcessingException(
+                        "Customers cannot view other users' payments");
+            }
+            return paymentRepository.findAllByRentalUserId(loggedUser.getId()).stream()
+                    .map(paymentMapper::toDto)
+                    .toList();
         }
-        List<Payment> payments;
-        if (isCustomer) {
-            payments = paymentRepository.findAllByRentalUserId(loggedUser.getId());
-        } else if (userId != null) {
-            payments = paymentRepository.findAllByRentalUserId(userId);
-        } else {
-            payments = paymentRepository.findAll();
-        }
+
+        List<Payment> payments = (userId != null)
+                ? paymentRepository.findAllByRentalUserId(userId)
+                : paymentRepository.findAll();
+
         return payments.stream()
                 .map(paymentMapper::toDto)
                 .toList();
