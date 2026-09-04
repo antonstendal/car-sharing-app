@@ -70,34 +70,36 @@ public class RentalNotificationMessageBuilder implements RentalNotificationMessa
 
     @Override
     public String buildSuccessfulPaymentMessage(Payment payment) {
+        Long rentalId = (payment.getRental() != null) ? payment.getRental().getId() : null;
         return """
-                Payment Successful!
-                
-                🆔 Payment ID: %d
-                💳 Session ID: %s
-                🚗 Rental ID: %d
-                💰 Amount Paid: PLN %s
-                Status: PAID
-                """.formatted(
+            Payment Successful!
+            
+            🆔 Payment ID: %d
+            💳 Session ID: %s
+            🚗 Rental ID: %s
+            💰 Amount Paid: PLN %s
+            Status: PAID
+            """.formatted(
                 payment.getId(),
                 payment.getSessionId(),
-                payment.getRental().getId(),
+                rentalId != null ? rentalId.toString() : "N/A",
                 payment.getAmountToPay()
         );
     }
 
     @Override
     public String buildCanceledPaymentMessage(Payment payment) {
+        Long rentalId = (payment.getRental() != null) ? payment.getRental().getId() : null;
         return """
-                Payment Canceled or Expired
-                
-                🆔 Payment ID: %d
-                🚗 Rental ID: %d
-                💰 Amount: PLN %s
-                Status: CANCELED
-                """.formatted(
+            Payment Canceled or Expired
+            
+            🆔 Payment ID: %d
+            🚗 Rental ID: %s
+            💰 Amount: PLN %s
+            Status: CANCELED
+            """.formatted(
                 payment.getId(),
-                payment.getRental().getId(),
+                rentalId != null ? rentalId.toString() : "N/A",
                 payment.getAmountToPay()
         );
     }

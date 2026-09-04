@@ -110,7 +110,7 @@ public class PaymentControllerTest {
                 10L,
                 Payment.Status.PENDING,
                 Payment.Type.PAYMENT,
-                3L,
+                4L,
                 SESSION_URL_XYZ,
                 SESSION_ID_XYZ,
                 FEE_199_99
@@ -252,7 +252,7 @@ public class PaymentControllerTest {
                         2L,
                         Payment.Status.PAID,
                         Payment.Type.FINE,
-                        1L,
+                        2L,
                         SESSION_URL_DEF,
                         SESSION_ID_DEF,
                         FEE_150_00),
@@ -260,7 +260,7 @@ public class PaymentControllerTest {
                         3L,
                         Payment.Status.PENDING,
                         Payment.Type.PAYMENT,
-                        2L,
+                        3L,
                         SESSION_URL_XYZ,
                         SESSION_ID_XYZ,
                         FEE_200_00));

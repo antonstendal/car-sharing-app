@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 
+@Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class RentalServiceImpl implements RentalService {
@@ -80,7 +83,8 @@ public class RentalServiceImpl implements RentalService {
             notificationService.send(
                     notificationMessageBuilder.buildNewRentalMessage(newRentalDto));
         } catch (RestClientException e) {
-            System.err.println(e.getMessage());
+            log.error("Failed to send rental create notification for new rental id: {}",
+                    newRentalDto.id());
         }
         return newRentalDto;
     }
@@ -108,7 +112,8 @@ public class RentalServiceImpl implements RentalService {
             notificationService.send(
                     notificationMessageBuilder.buildReturnRentalMessage(newRentalDto));
         } catch (RestClientException e) {
-            System.err.println(e.getMessage());
+            log.error("Failed to send return notification for new rental id: {}",
+                    newRentalDto.id());
         }
         return newRentalDto;
     }
@@ -124,7 +129,7 @@ public class RentalServiceImpl implements RentalService {
                 notificationService.send(
                         notificationMessageBuilder.buildNoRentalsOverdueMessage());
             } catch (RestClientException e) {
-                System.err.println(e.getMessage());
+                log.error("Failed to send notification: {}", e.getMessage());
             }
         }
         for (RentalDto rentalDto : listRentalDto) {
@@ -132,7 +137,7 @@ public class RentalServiceImpl implements RentalService {
                 notificationService.send(
                         notificationMessageBuilder.buildOverdueRentalMessage(rentalDto));
             } catch (RestClientException e) {
-                System.err.println(e.getMessage());
+                log.error("Failed to send notification for rental id: {}", rentalDto.id());
             }
         }
     }

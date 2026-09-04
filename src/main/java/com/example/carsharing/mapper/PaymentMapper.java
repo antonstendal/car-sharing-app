@@ -8,6 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(config = MapperConfig.class)
 public interface PaymentMapper {
-    @Mapping(source = "rental.id", target = "rentalId")
-    PaymentDto toDto(Payment rental);
+    @Mapping(source = "payment.id", target = "rentalId")
+    PaymentDto toDto(Payment payment);
 }

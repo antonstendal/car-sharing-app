@@ -5,6 +5,7 @@ import com.example.carsharing.dto.car.CreateCarRequestDto;
 import com.example.carsharing.dto.car.UpdateCarRequestDto;
 import com.example.carsharing.exception.EntityAlreadyExistsException;
 import com.example.carsharing.exception.EntityNotFoundException;
+import com.example.carsharing.exception.RentalProcessingException;
 import com.example.carsharing.mapper.CarMapper;
 import com.example.carsharing.model.Car;
 import com.example.carsharing.repository.car.CarRepository;
@@ -294,7 +295,6 @@ public class CarServiceTest {
     @Test
     @DisplayName("deleteById() - Success: Deletes car when it exists and has no active rentals")
     void deleteById_ExistingIdAndNoActiveRentals_DeletesCar() {
-        // Given
         Car carFromDb = new Car();
         carFromDb.setId(1L);
         carFromDb.setModel("Camry");
@@ -317,7 +317,7 @@ public class CarServiceTest {
 
     @Test
     @DisplayName("deleteById() - Throws Exception: Cannot delete car with active rentals")
-    void deleteById_ActiveRentalsExist_ThrowsEntityAlreadyExistsException() {
+    void deleteById_ActiveRentalsExist_ThrowsRentalProcessingException() {
         Car carFromDb = new Car();
         carFromDb.setId(1L);
         carFromDb.setModel("Camry");
@@ -329,7 +329,7 @@ public class CarServiceTest {
         when(carRepository.findById(1L)).thenReturn(Optional.of(carFromDb));
         when(rentalRepository.existsByCarIdAndActualReturnDateIsNull(1L)).thenReturn(true);
 
-        EntityAlreadyExistsException exception = assertThrows(EntityAlreadyExistsException.class,
+        RentalProcessingException exception = assertThrows(RentalProcessingException.class,
                 () -> carService.deleteById(1L));
 
         assertThat("Cannot delete car with id 1 because it has active rentals")
